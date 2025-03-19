@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 
 namespace VendingMachine
 {
     class Program
     {
+        private const string LogFilePath = "VendingMachineLog.txt";
+
         static void Main(string[] args)
         {
             ShowMenu();
@@ -26,9 +29,9 @@ namespace VendingMachine
             Console.Write("Enter the number of your choice: ");
             string? input = Console.ReadLine();
             int choice;
-            while (!int.TryParse(input, out choice) || choice < 1 || choice > 2)
+            while (!int.TryParse(input, out choice) || choice < 1 || choice > 4) // Adjusted to match all menu options
             {
-                Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                Console.WriteLine("Invalid choice. Please enter a number between 1 and 4.");
                 input = Console.ReadLine();
             }
             return choice;
@@ -36,15 +39,27 @@ namespace VendingMachine
 
         static void VendItem(int choice)
         {
-            switch (choice)
+            string item = choice switch
             {
-                case 1:
-                    Console.WriteLine("Vending Soda...");
-                    break;
-                case 2:
-                    Console.WriteLine("Vending Candy...");
-                    break;
-            }
+                1 => "Soda",
+                2 => "Candy",
+                3 => "Gum",
+                4 => "Chips",
+                _ => "Unknown"
+            };
+
+            Console.WriteLine($"Vending {item}...");
+            LogActivity(item); // Log the transaction
+            Console.WriteLine("Transaction logged.");
+        }
+
+        static void LogActivity(string item)
+        {
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string logEntry = $"{timestamp} - Vended: {item}";
+
+            // Append the log entry to the log file
+            File.AppendAllText(LogFilePath, logEntry + Environment.NewLine);
         }
     }
 }
